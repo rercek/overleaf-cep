@@ -1040,8 +1040,9 @@ module.exports = {
     'launchpad',
     'server-ce-scripts',
     'user-activate',
-    'ldap-authentication',
-    'saml-authentication',
+    'authentication/ldap',
+    'authentication/saml',
+    'authentication/oidc',
   ],
   viewIncludes: {},
 
@@ -1068,6 +1069,20 @@ module.exports = {
   managedUsers: {
     enabled: false,
   },
+
+  oauthProviders: {
+    ...(process.env.EXTERNAL_AUTH && process.env.EXTERNAL_AUTH.includes('oidc') && {
+      [process.env.OVERLEAF_OIDC_PROVIDER_ID || 'oidc']: {
+        name: process.env.OVERLEAF_OIDC_PROVIDER_NAME || 'OIDC Provider',
+        descriptionKey: process.env.OVERLEAF_OIDC_PROVIDER_DESCRIPTION,
+        descriptionOptions: { link: process.env.OVERLEAF_OIDC_PROVIDER_INFO_LINK },
+        hideWhenNotLinked: process.env.OVERLEAF_OIDC_PROVIDER_HIDE_NOT_LINKED ?
+          process.env.OVERLEAF_OIDC_PROVIDER_HIDE_NOT_LINKED.toLowerCase() === 'true' : undefined,
+        linkPath: '/oidc/login',
+      },
+    }),
+  },
+
 }
 
 module.exports.mergeWith = function (overrides) {
